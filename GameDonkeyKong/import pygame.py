@@ -1,4 +1,11 @@
 # DONKEY KONG REBUILD IN PYTHON WITH THE PYGAME MODULE! (Est.720 Lines of Code)
+COLORS = {
+    "light blue": (173, 216, 230),
+    "red": (255, 0, 0),
+    "green": (0, 255, 0),
+    "black": (0, 0, 0),
+    "white": (255, 255, 255),
+}
 import os
 import random
 import textwrap
