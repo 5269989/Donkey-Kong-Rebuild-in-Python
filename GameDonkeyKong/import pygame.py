@@ -3,6 +3,16 @@ import os
 import random
 import textwrap
 import pygame
+import RPi.GPIO as GPIO  
+import time
+
+# GPIO setup
+GPIO.setmode(GPIO.BCM)  # Use Broadcom pin-numbering
+GREEN_LED = 4
+RED_LED = 17
+
+GPIO.setup(GREEN_LED, GPIO.OUT)
+GPIO.setup(RED_LED, GPIO.OUT)
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'  # call before pygame.init()
 pygame.init()
@@ -129,6 +139,24 @@ levels = [{'bridges': [(1, start_y, 15), (16, start_y - slope, 3),
 
 ### Questions implementation #############################################################################################################################
 
+def display_led(correct):
+    if correct:
+        message = "Correct!"
+        GPIO.output(GREEN_LED, GPIO.HIGH)  # Turn ON Green LED
+        time.sleep(1)  # LED stays ON for 1 second
+        GPIO.output(GREEN_LED, GPIO.LOW)  # Turn OFF Green LED
+    else:
+        message = "Wrong!"
+        GPIO.output(RED_LED, GPIO.HIGH)  # Turn ON Red LED
+        time.sleep(1)  # LED stays ON for 1 second
+        GPIO.output(RED_LED, GPIO.LOW)  # Turn OFF Red LED
+    
+    text = font.render(message, True, (255, 255, 255))
+    screen.fill((0, 0, 0))
+    screen.blit(text, (300, 250))
+    pygame.display.flip()
+    time.sleep(1)
+
 # Set up font sizes (you can adjust the size based on your needs)
 font_size = 60  # Standard size for options and instructions 
 big_font_size = 100  # Bigger font for questions 
@@ -222,9 +250,12 @@ def ask_cybersecurity_question():
                     selected_answer = chr(pygame.K_a + selected_index).upper()
                     if selected_answer == correct_answer:
                         display_feedback("Correct!", GREEN)
+                        display_led(True)
                         return True  # Answer was correct
                     else:
                         display_feedback("Incorrect!", RED)
+                        display_led(False)
+
                         return False  # Answer was incorrect
                 elif event.key == pygame.K_DOWN:
                     selected_index = (selected_index + 1) % len(options)
@@ -1008,4 +1039,6 @@ while run:
         player.climbing = False
 
     pygame.display.flip()
+    
+GPIO.cleanup()
 pygame.quit()
